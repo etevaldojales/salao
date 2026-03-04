@@ -1,6 +1,15 @@
 Sempre excluir a venv
 
-Ordem de instaação:
+
+py -m venv venv
+.\venv\Scripts\activate.ps1
+pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+
+Ordem de instalação:
 
 - py -m venv venv
 - .\venv\Scripts\activate.ps1
@@ -11,6 +20,9 @@ Ordem de instaação:
 - python -m pip install mysqlclient
 - python -m pip install django-soft-delete
 - python -m pip install pycasbin
-- python manage.py makemigrations
-- python manage.py migrate 
+- 
 - python manage.py runserver
+
+SUPERUSER:
+
+dono_admin
