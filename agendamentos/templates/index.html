@@ -1,58 +1,40 @@
 {% extends 'base.html' %}
 
-{% block title %}Página Inicial - Sistema de Agendamento{% endblock %}
+{% include 'pagination.html' %}
 
 {% block content %}
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Agendamentos</h1>
-    </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Data</th>
-                <th>Hora</th>
-                <th>Usuário</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for agendamento in agendamentos %}
-            <tr>
-                <td>{{ agendamento.nome_cliente }}</td>
-                <td>{{ agendamento.data_agendamento.strftime('%d/%m/%Y') }}</td>
-                <td>{{ agendamento.hora_agendamento }}</td>
-                <td>{{ agendamento.usuario_nome }}</td>
-                <td>
-                    <a href="{{ url_for('edit_agendamento', id=agendamento.id) }}" class="btn btn-sm btn-warning">Editar</a>
-                    <a href="{{ url_for('delete_agendamento', id=agendamento.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5" class="text-center">Nenhum agendamento encontrado.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<h2>Agendamentos</h2>
 
-    {% if total_pages > 1 %}
-    <div class="d-flex justify-content-center">
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                <li class="page-item {% if page <= 1 %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('index', page=page-1) }}">Anterior</a>
-                </li>
-                {% for p in range(1, total_pages + 1) %}
-                    <li class="page-item {% if p == page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('index', page=p) }}">{{ p }}</a>
-                    </li>
-                {% endfor %}
-                <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('index', page=page+1) }}">Próxima</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-    {% endif %}
+<a href="{% url 'add_agendamento' %}" class="btn btn-primary mb-3">Novo</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Serviço</th>
+            <th>Profissional</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in agendamentos %}
+        <tr>
+            <td>{{ a.cliente.nome }}</td>
+            <td>{{ a.servico.nome }}</td>
+            <td>{{ a.profissional.nome }}</td>
+            <td>{{ a.data_hora|date:"d/m/Y H:i" }}</td>
+            <td>{{ a.status }}</td>
+            <td>
+                <a href="{% url 'edit_agendamento' a.id %}" class="btn btn-warning btn-sm">Editar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">Nenhum agendamento</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

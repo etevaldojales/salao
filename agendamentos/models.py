@@ -1,30 +1,30 @@
 from django.db import models
-from django.conf import settings
-from django.utils import timezone
-from django_softdelete.models import SoftDeleteModel
 
 class Cliente(models.Model):
     nome = models.CharField(max_length=100)
-    email = models.EmailField(null=True, blank=True)
+    email = models.EmailField(blank=True, null=True)
     telefone = models.CharField(max_length=20)
 
-    def str(self):
-        return self.nome 
+    def __str__(self):
+        return self.nome
+
 
 class Servico(models.Model):
     nome = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     duracao = models.DurationField()
 
-    def str(self):
+    def __str__(self):
         return self.nome
+
 
 class Profissional(models.Model):
     nome = models.CharField(max_length=100)
-    especialidade =  models.CharField(max_length=100)
+    especialidade = models.CharField(max_length=100)
 
-    def str(self):
+    def __str__(self):
         return self.nome
+
 
 class Agendamento(models.Model):
 
@@ -42,11 +42,8 @@ class Agendamento(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['data_hora']),
-            models.Index(fields=['status']),
+            models.Index(fields=['status', 'data_hora']),
         ]
 
-    def str(self):
-        return f"{self.cliente} - {self.servico} ({self.data_hora})"
-
-
+    def __str__(self):
+        return f"{self.cliente} - {self.servico}"

@@ -3,23 +3,23 @@
 {% block title %}Editar Usuário{% endblock %}
 
 {% block content %}
-    <h2>Editar Usuário</h2>
-    <form method="post">
-        <div class="mb-3">
-            <label for="nome" class="form-label">Nome Completo</label>
-            <input type="text" class="form-control" id="nome" name="nome" value="{{ usuario.nome }}" required>
-        </div>
-        <div class="mb-3">
-            <label for="username" class="form-label">Nome de Usuário</label>
-            <input type="text" class="form-control" id="username" name="username" value="{{ usuario.username }}" required>
-        </div>
-        <hr>
-        <p class="text-muted">Deixe os campos de senha em branco para não a alterar.</p>
-        <div class="mb-3">
-            <label for="password" class="form-label">Nova Senha</label>
-            <input type="password" class="form-control" id="password" name="password">
-        </div>
-        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-        <a href="{{ url_for('list_usuarios') }}" class="btn btn-secondary">Cancelar</a>
-    </form>
+
+<h2>Editar Usuário</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        {{ form.username }}
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">É Admin?</label>
+        {{ form.is_staff }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
 {% endblock %}
