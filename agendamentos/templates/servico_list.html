@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Serviços{% endblock %}
+
+{% block content %}
+    <h1>Serviços</h1>
+    <a href="{% url 'servico_create' %}" class="btn btn-primary mb-3">Novo Serviço</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Duração</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servico in servicos %}
+                <tr>
+                    <td>{{ servico.nome }}</td>
+                    <td>{{ servico.preco }}</td>
+                    <td>{{ servico.duracao }}</td>
+                    <td>
+                        <a href="{% url 'servico_update' servico.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'servico_delete' servico.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

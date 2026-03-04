@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if profissional %}Editar Profissional{% else %}Novo Profissional{% endif %}{% endblock %}
+
+{% block content %}
+    <h1>{% if profissional %}Editar Profissional{% else %}Novo Profissional{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'profissional_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+{% endblock %}

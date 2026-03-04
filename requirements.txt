@@ -1,4 +1,4 @@
-django>=6.0.3
+django>=5.0.0,<6.0
 django-soft-delete>=1.0.23
 mysqlclient>=2.2.8
 pip>=26.0.1

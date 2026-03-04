@@ -1,20 +1,361 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Relatório de Serviços Concluídos</h2>
+<h2>Relatórios</h2>
 
-<button onclick="carregar()" class="btn btn-primary">Atualizar</button>
+<!-- Filtros de Data -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <label for="data_inicio" class="form-label">Data Início</label>
+        <input type="date" id="data_inicio" class="form-control">
+    </div>
+    <div class="col-md-4">
+        <label for="data_fim" class="form-label">Data Fim</label>
+        <input type="date" id="data_fim" class="form-control">
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button onclick="aplicarFiltros()" class="btn btn-primary w-100">Aplicar Filtros</button>
+    </div>
+</div>
 
-<h4 class="mt-3">Total: <span id="total">0</span></h4>
+<!-- Abas de Navegação -->
+<ul class="nav nav-tabs" id="relatorioTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="agendamentos-tab" data-bs-toggle="tab" data-bs-target="#agendamentos" type="button" role="tab">Agendamentos</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="faturamento-tab" data-bs-toggle="tab" data-bs-target="#faturamento" type="button" role="tab">Faturamento</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="servicos-tab" data-bs-toggle="tab" data-bs-target="#servicos" type="button" role="tab">Serviços</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profissionais-tab" data-bs-toggle="tab" data-bs-target="#profissionais" type="button" role="tab">Profissionais</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#status" type="button" role="tab">Status</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="clientes-tab" data-bs-toggle="tab" data-bs-target="#clientes" type="button" role="tab">Clientes</button>
+    </li>
+</ul>
+
+<!-- Conteúdo das Abas -->
+<div class="tab-content mt-3" id="relatorioTabsContent">
+    
+    <!-- Agendamentos por Dia -->
+    <div class="tab-pane fade show active" id="agendamentos" role="tabpanel">
+        <h4>Agendamentos Concluídos por Dia</h4>
+        <h5 class="text-primary">Total: <span id="total_agendamentos">0</span></h5>
+        <div style="height: 300px;">
+            <canvas id="chartAgendamentos"></canvas>
+        </div>
+    </div>
+
+    <!-- Faturamento -->
+    <div class="tab-pane fade" id="faturamento" role="tabpanel">
+        <h4>Relatório de Faturamento</h4>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="periodo" class="form-label">Período</label>
+                <select id="periodo" class="form-select" onchange="carregarFaturamento()">
+                    <option value="dia">Dia</option>
+                    <option value="mes">Mês</option>
+                </select>
+            </div>
+        </div>
+        
+        <h5 class="text-success">Total Faturado: R$ <span id="total_faturamento">0,00</span></h5>
+        <div style="height: 300px;">
+            <canvas id="chartFaturamento"></canvas>
+        </div>
+    </div>
+
+    <!-- Serviços -->
+    <div class="tab-pane fade" id="servicos" role="tabpanel">
+        <h4>Serviços Mais Populares</h4>
+        <div class="table-responsive">
+            <table class="table table-striped" id="tabela_servicos">
+                <thead>
+                    <tr>
+                        <th>Serviço</th>
+                        <th>Preço</th>
+                        <th>Quantidade</th>
+                        <th>Total Faturado</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Profissionais -->
+    <div class="tab-pane fade" id="profissionais" role="tabpanel">
+        <h4>Desempenho dos Profissionais</h4>
+        <div class="table-responsive">
+            <table class="table table-striped" id="tabela_profissionais">
+                <thead>
+                    <tr>
+                        <th>Profissional</th>
+                        <th>Especialidade</th>
+                        <th>Quantidade</th>
+                        <th>Total Faturado</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Status -->
+    <div class="tab-pane fade" id="status" role="tabpanel">
+        <h4>Agendamentos por Status</h4>
+        <h5 class="text-muted">Total de Agendamentos: <span id="total_status">0</span></h5>
+        <div style="height: 300px;">
+            <canvas id="chartStatus"></canvas>
+        </div>
+        <div class="table-responsive mt-3">
+            <table class="table table-striped" id="tabela_status">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Quantidade</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Clientes -->
+    <div class="tab-pane fade" id="clientes" role="tabpanel">
+        <h4>Top 10 Clientes</h4>
+        <div class="table-responsive">
+            <table class="table table-striped" id="tabela_clientes">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Telefone</th>
+                        <th>Quantidade de Agendamentos</th>
+                        <th>Total Gasto</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-function carregar() {
-    fetch("{% url 'dados_relatorio' %}")
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById('total').textContent = data.total;
-    });
+let chartAgendamentos = null;
+let chartFaturamento = null;
+let chartStatus = null;
+
+function getFiltros() {
+    return {
+        data_inicio: document.getElementById('data_inicio').value,
+        data_fim: document.getElementById('data_fim').value
+    };
 }
+
+function construirURL(baseUrl) {
+    const filtros = getFiltros();
+    let url = baseUrl + '?';
+    if (filtros.data_inicio) url += 'data_inicio=' + filtros.data_inicio + '&';
+    if (filtros.data_fim) url += 'data_fim=' + filtros.data_fim + '&';
+    return url;
+}
+
+function aplicarFiltros() {
+    carregarAgendamentos();
+    carregarFaturamento();
+    carregarServicos();
+    carregarProfissionais();
+    carregarStatus();
+    carregarClientes();
+}
+
+function carregarAgendamentos() {
+    fetch(construirURL("{% url 'dados_relatorio' %}"))
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('total_agendamentos').textContent = data.total;
+            
+            const labels = Object.keys(data.por_dia);
+            const values = Object.values(data.por_dia);
+            
+            if (chartAgendamentos) chartAgendamentos.destroy();
+            
+            chartAgendamentos = new Chart(document.getElementById('chartAgendamentos'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Agendamentos',
+                        data: values,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        });
+}
+
+function carregarFaturamento() {
+    const periodo = document.getElementById('periodo').value;
+    let url = "{% url 'dados_relatorio_faturamento' %}?" + (getFiltros().data_inicio ? 'data_inicio=' + getFiltros().data_inicio + '&' : '') + (getFiltros().data_fim ? 'data_fim=' + getFiltros().data_fim + '&' : '') + 'periodo=' + periodo;
+    
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('total_faturamento').textContent = data.total_faturamento.toFixed(2).replace('.', ',');
+            
+            const labels = Object.keys(data.por_periodo);
+            const values = labels.map(key => data.por_periodo[key].total);
+            
+            if (chartFaturamento) chartFaturamento.destroy();
+            
+            chartFaturamento = new Chart(document.getElementById('chartFaturamento'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Faturamento (R$)',
+                        data: values,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        });
+}
+
+function carregarServicos() {
+    fetch(construirURL("{% url 'dados_relatorio_servicos' %}"))
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#tabela_servicos tbody');
+            tbody.innerHTML = '';
+            data.servicos.forEach(servico => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${servico.nome}</td>
+                        <td>R$ ${servico.preco.toFixed(2).replace('.', ',')}</td>
+                        <td>${servico.quantidade}</td>
+                        <td>R$ ${servico.total_faturado.toFixed(2).replace('.', ',')}</td>
+                    </tr>
+                `;
+            });
+        });
+}
+
+function carregarProfissionais() {
+    fetch(construirURL("{% url 'dados_relatorio_profissionais' %}"))
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#tabela_profissionais tbody');
+            tbody.innerHTML = '';
+            data.profissionais.forEach(prof => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${prof.nome}</td>
+                        <td>${prof.especialidade}</td>
+                        <td>${prof.quantidade}</td>
+                        <td>R$ ${prof.total_faturado.toFixed(2).replace('.', ',')}</td>
+                    </tr>
+                `;
+            });
+        });
+}
+
+function carregarStatus() {
+    fetch(construirURL("{% url 'dados_relatorio_status' %}"))
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('total_status').textContent = data.total_geral;
+            
+            const labels = data.status.map(s => s.status);
+            const values = data.status.map(s => s.total);
+            
+            const cores = {
+                'AGENDADO': 'rgba(54, 162, 235, 0.6)',
+                'CONCLUIDO': 'rgba(75, 192, 192, 0.6)',
+                'CANCELADO': 'rgba(255, 99, 132, 0.6)'
+            };
+            
+            if (chartStatus) chartStatus.destroy();
+            
+            chartStatus = new Chart(document.getElementById('chartStatus'), {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: labels.map(l => cores[l] || 'rgba(200, 200, 200, 0.6)')
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            const tbody = document.querySelector('#tabela_status tbody');
+            tbody.innerHTML = '';
+            data.status.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.status}</td>
+                        <td>${s.total}</td>
+                    </tr>
+                `;
+            });
+        });
+}
+
+function carregarClientes() {
+    fetch(construirURL("{% url 'dados_relatorio_clientes' %}"))
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#tabela_clientes tbody');
+            tbody.innerHTML = '';
+            data.clientes.forEach(cliente => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${cliente.nome}</td>
+                        <td>${cliente.telefone}</td>
+                        <td>${cliente.quantidade}</td>
+                        <td>R$ ${cliente.total_gasto.toFixed(2).replace('.', ',')}</td>
+                    </tr>
+                `;
+            });
+        });
+}
+
+// Carregar dados ao iniciar
+aplicarFiltros();
 </script>
 
 {% endblock %}
+

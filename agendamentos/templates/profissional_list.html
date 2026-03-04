@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Profissionais{% endblock %}
+
+{% block content %}
+    <h1>Profissionais</h1>
+    <a href="{% url 'profissional_create' %}" class="btn btn-primary mb-3">Novo Profissional</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Especialidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for profissional in profissionais %}
+                <tr>
+                    <td>{{ profissional.nome }}</td>
+                    <td>{{ profissional.especialidade }}</td>
+                    <td>
+                        <a href="{% url 'profissional_update' profissional.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'profissional_delete' profissional.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
