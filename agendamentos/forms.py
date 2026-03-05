@@ -18,7 +18,7 @@ class ClienteForm(forms.ModelForm):
 class ServicoForm(forms.ModelForm):
     class Meta:
         model = Servico
-        fields = ['nome', 'preco', 'duracao']
+        fields = ['nome', 'preco']
 
 class ProfissionalForm(forms.ModelForm):
     class Meta:

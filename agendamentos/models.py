@@ -1,6 +1,7 @@
 from django.db import models
+from django_softdelete.models import SoftDeleteModel
 
-class Cliente(models.Model):
+class Cliente(SoftDeleteModel, models.Model):
     nome = models.CharField(max_length=100)
     email = models.EmailField(blank=True, null=True)
     telefone = models.CharField(max_length=20)
@@ -9,7 +10,7 @@ class Cliente(models.Model):
         return self.nome
 
 
-class Servico(models.Model):
+class Servico(SoftDeleteModel, models.Model):
     nome = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=8, decimal_places=2)
     #duracao = models.DurationField()
@@ -18,7 +19,7 @@ class Servico(models.Model):
         return self.nome
 
 
-class Profissional(models.Model):
+class Profissional(SoftDeleteModel, models.Model):
     nome = models.CharField(max_length=100)
     especialidade = models.CharField(max_length=100)
 
@@ -26,7 +27,7 @@ class Profissional(models.Model):
         return self.nome
 
 
-class Agendamento(models.Model):
+class Agendamento(SoftDeleteModel, models.Model):
 
     STATUS_CHOICES = [
         ('AGENDADO', 'Agendado'),

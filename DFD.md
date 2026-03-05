@@ -1,341 +1,330 @@
-# Diagrama de Fluxo de Dados (DFD) - Sistema de Agendamentos de Salão
+# Diagrama de Fluxo de Dados (DFD) - Sistema de Gerenciamento de Salão
 
-## Visão Geral
+## Visão Geral do Sistema
 
-Este documento apresenta o Diagrama de Fluxo de Dados (DFD) para o Sistema de Gerenciamento de Agendamentos de Salão. O DFD描绘a como os dados fluem através do sistema, incluindo processos, armazenamentos de dados, entidades externas e fluxos de dados.
+Este documento apresenta o Diagrama de Fluxo de Dados (DFD) para o sistema de gerenciamento de salão de beleza, desenvolvido em Django com banco de dados MySQL.
 
 ---
 
-## Diagrama de Contexto (Nível 0)
+## Nível 0 - Contexto do Sistema
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          SISTEMA DE GERENCIAMENTO                       │
+│                              DE SALÃO                                    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+        ┌─────────────┬─────────────┼─────────────┬─────────────┐
+        │             │             │             │             │
+        ▼             ▼             ▼             ▼             ▼
+   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
+   │Cliente  │  │Profiss. │  │Admin    │  │Sistema  │  │Relatórios│
+   │         │  │         │  │         │  │Autent.  │  │         │
+   └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘
+```
+
+---
+
+## Nível 1 - Decomposição do Sistema
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         SISTEMA DE AGENDAMENTOS                             │
+│                        SISTEMA DE SALÃO                                      │
 │                                                                             │
-│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐            │
-│  │ Cliente  │    │Profissional│   │ Servico  │    │ Admin    │            │
-│  └────┬─────┘    └────┬─────┘    └────┬─────┘    └────┬─────┘            │
-│       │               │               │               │                   │
-│       │    ┌──────────▼──────────────▼──────────────┐                   │
-│       └────►                                    ◄────┘                   │
-│            │     SISTEMA DE AGENDAMENTOS           │                     │
-│            │                                        │                     │
-│            │   ┌────────────────────────────────┐  │                     │
-│            └──►│  Gerenciamento de Agendamentos │──┘                     │
-│                 └────────────────────────────────┘                        │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌───────────┐ │
+│  │  Autenticação│    │Gerenciamento │    │  Agendamento │    │Relatórios │ │
+│  │   de Usuário │    │   de Dados   │    │   de Serviços │   │  e Estat. │ │
+│  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘    └─────┬─────┘ │
+│         │                   │                   │                   │       │
+│         └───────────────────┼───────────────────┼───────────────────┘       │
+│                             │                   │                           │
+│                        ┌────▼───────────────────▼────┐                       │
+│                        │      BANCO DE DADOS          │                       │
+│                        │   (MySQL - salao_banco)      │                       │
+│                        └──────────────────────────────┘                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Diagrama de Nível 1
+## Nível 2 - Detalhamento dos Processos
+
+### 2.1 Autenticação de Usuário
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                           SISTEMA DE AGENDAMENTOS DE SALÃO                          │
-│                                                                                      │
-│                                                                                      │
-│  ┌──────────────┐                                                                         │
-│  │   CLIENTE    │                                                                         │
-│  └──────┬───────┘                                                                         │
-│         │                                                                               │
-│         │ 1. Dados do Cliente                                                            │
-│         ▼                                                                               │
-│  ┌──────────────────────────────────────────────────────────────────────────┐           │
-│  │  P1: GERENCIAMENTO DE CLIENTES                                           │           │
-│  │  ─────────────────────────────────────                                   │           │
-│  │  • Cadastrar cliente                                                    │           │
-│  │  • Atualizar cliente                                                    │           │
-│  │  • Excluir cliente                                                     │           │
-│  │  • Listar clientes                                                      │           │
-│  └───────┬──────────────────────────────────────────────┬────────────────────┘           │
-│          │ 2. Dados do Cliente                         │                              │
-│          │                                             │                              │
-│          ▼                                             ▼                              │
-│  ┌────────────────────────────────┐    ┌────────────────────────────────────────┐      │
-│  │     ARMAZENAMENTO:             │    │  P2: GERENCIAMENTO DE AGENDAMENTOS    │      │
-│  │     CLIENTES                   │    │  ─────────────────────────────────    │      │
-│  │     ─────────────              │    │  • Criar agendamento                  │      │
-│  │     • id                       │    │  • Editar agendamento                 │      │
-│  │     • nome                     │    │  • Cancelar agendamento               │      │
-│  │     • email                    │    │  • Listar agendamentos                │      │
-│  │     • telefone                 │    │  • Atualizar status                   │      │
-│  └────────────────────────┬───────┘    └─────────────────────┬────────────────────┘      │
-│                           │                                   │                            │
-│                           │ 3. Dados de Agendamento          │                            │
-│                           │ 4. Solicitação de Agendamento    │                            │
-│                           ▼                                   │                            │
-│  ┌──────────────┐                                   ┌────────▼─────────┐               │
-│  │  SERVIÇO     │                                   │  AGENDAMENTOS   │               │
-│  └──────┬───────┘                                   └────────┬────────┘               │
-│         │                                                    │                          │
-│         │ 5. Dados do Serviço                                │                          │
-│         ▼                                                    │                          │
-│  ┌──────────────────────────────────────────────┐           │                          │
-│  │  P3: GERENCIAMENTO DE SERVIÇOS                │           │                          │
-│  │  ─────────────────────────────────           │           │                          │
-│  │  • Cadastrar serviço                          │           │                          │
-│  │  • Atualizar serviço                         │           │                          │
-│  │  • Excluir serviço                           │           │                          │
-│  │  • Listar serviços                           │           │                          │
-│  └───────────────┬──────────────────────────────┘           │                          │
-│                  │ 6. Dados do Serviço                       │                          │
-│                  │                                            │                          │
-│                  ▼                                            │                          │
-│  ┌────────────────────────────────┐                          │                          │
-│  │     ARMAZENAMENTO:             │    ┌─────────────────────▼──────────────┐             │
-│  │     SERVIÇOS                   │    │  P4: GERENCIAMENTO DE              │             │
-│  │     ─────────                  │    │  PROFISSIONAIS                    │             │
-│  │     • id                       │    │  ───────────────────              │             │
-│  │     • nome                     │    │  • Cadastrar profissional         │             │
-│  │     • preco                    │    │  • Atualizar profissional         │             │
-│  │     • duracao                  │    │  • Excluir profissional            │             │
-│  └─────────────┬──────────────────┘    │  • Listar profissionais           │             │
-│                │ 7. Dados do            │  ─────────────────────────────     │             │
-│                │    Profissional        └──────────────┬───────────────────┘             │
-│                ▼                                        │                                 │
-│  ┌────────────────────────────┐                         │                                 │
-│  │     ARMAZENAMENTO:         │                         │                                 │
-│  │     PROFISSIONAIS          │                         │                                 │
-│  │     ─────────────          │                         │                                 │
-│  │     • id                   │                         │                                 │
-│  │     • nome                 │                         │                                 │
-│  │     • especialidade        │                         │                                 │
-│  └────────────────────────────┘                         │                                 │
-│                                                         │                                 │
-│  ┌──────────────┐                                        │                                 │
-│  │ ADMINISTRADOR│                                        │                                 │
-│  └──────┬───────┘                                        │                                 │
-│         │ 8. Solicitações de Relatório                   │                                 │
-│         │ 9. Comandos de Gerenciamento                   │                                 │
-│         ▼                                                │                                 │
-│  ┌──────────────────────────────────────────────────────┴──────────────────────────┐    │
-│  │  P5: GERENCIAMENTO DE RELATÓRIOS                                            │         │
-│  │  ────────────────────────────                                               │         │
-│  │  • Gerar relatório de agendamentos                                          │         │
-│  │  • Gerar relatório de faturamento                                           │         │
-│  │  • Gerar relatório de serviços                                             │         │
-│  │  • Gerar relatório de profissionais                                         │         │
-│  │  • Gerar relatório de clientes                                             │         │
-│  │  • Gerar relatório de status                                                │         │
-│  └───────────────────────────────────────────────────────────────────────────────┘    │
-│                                    │                                                   │
-│                                    │ 10. Dados dos Relatórios                          │
-│                                    ▼                                                   │
-│  ┌─────────────────────────────────────────────────────────────────────────┐            │
-│  │  P6: AUTENTICAÇÃO E AUTORIZAÇÃO                                        │            │
-│  │  ─────────────────────────────                                        │            │
-│  │  • Registrar usuário                                                    │            │
-│  │  • Login/Logout                                                        │            │
-│  │  • Controle de permissões                                              │            │
-│  └─────────────────────────────────────────────────────────────────────────┘            │
-│                                    │                                                   │
-│                                    ▼                                                   │
-│  ┌────────────────────────────────┐                                                   │
-│  │     ARMAZENAMENTO:             │                                                   │
-│  │     USUÁRIOS                   │                                                   │
-│  │     ──────────                 │                                                   │
-│  │     • id                       │                                                   │
-│  │     • username                 │                                                   │
-│  │     • password                 │                                                   │
-│  │     • is_staff                 │                                                   │
-│  └────────────────────────────────┘                                                   │
-│                                                                                       │
-└───────────────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                   PROCESSO: AUTENTICAÇÃO                         │
+│                                                                 │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐    │
+│   │   Login     │───▶│  Validar    │───▶│  Criar Sessão   │    │
+│   │  (form)     │    │  Credenciais│    │  (session)      │    │
+│   └─────────────┘    └─────────────┘    └─────────────────┘    │
+│         │                                    │                  │
+│         │         ┌─────────────┐            │                  │
+│         └────────▶│  Registro   │────────────┘                  │
+│                   │  (novo user)│                                 │
+│                   └─────────────┘                                 │
+│                                                                 │
+│   Entidades Externas:                                           │
+│   - Cliente (pode se registrar)                                 │
+│   - Administrador (acesso total)                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
----
-
-## Descrição dos Elementos
-
-### Entidades Externas
-
-| Entidade | Descrição | Dados Enviados/Recebidos |
-|----------|-----------|--------------------------|
-| **Cliente** | Cliente do salão que agenda serviços | Dados pessoais, solicitação de agendamento |
-| **Profissional** | Profissional que realiza os serviços | Dados profissionais |
-| **Administrador** | Gerenciador do sistema | Comandos de gestão, solicitações de relatório |
-
-### Processos
-
-| Processo | Descrição | Entradas | Saídas |
-|----------|-----------|----------|--------|
-| **P1: Gerenciamento de Clientes** | CRUD de clientes | Dados do cliente | Dados do cliente, confirmação |
-| **P2: Gerenciamento de Agendamentos** | CRUD e controle de status | Dados de agendamento, solicitações | Dados do agendamento, confirmação |
-| **P3: Gerenciamento de Serviços** | CRUD de serviços | Dados do serviço | Dados do serviço, confirmação |
-| **P4: Gerenciamento de Profissionais** | CRUD de profissionais | Dados do profissional | Dados do profissional, confirmação |
-| **P5: Gerenciamento de Relatórios** | Geração de relatórios | Parâmetros de filtro | Dados estatísticos |
-| **P6: Autenticação e Autorização** | Controle de acesso | Credenciais | Token de autenticação |
-
-### Armazenamentos de Dados
-
-| Armazenamento | Descrição | Dados Armazenados |
-|---------------|------------|-------------------|
-| **CLIENTES** | Cadastro de clientes | id, nome, email, telefone |
-| **SERVIÇOS** | Catálogo de serviços | id, nome, preco, duracao |
-| **PROFISSIONAIS** | Cadastro de profissionais | id, nome, especialidade |
-| **AGENDAMENTOS** | Registro de agendamentos | id, cliente_id, servico_id, profissional_id, data_hora, status |
-| **USUÁRIOS** | Usuários do sistema | id, username, password, is_staff |
-
-### Fluxos de Dados
-
-| Fluxo | Descrição | Origem → Destino |
-|-------|-----------|------------------|
-| 1 | Dados do Cliente | Cliente → P1 |
-| 2 | Dados do Cliente (confirmação) | P1 → CLIENTES |
-| 3 | Dados de Agendamento | P1 → P2 |
-| 4 | Solicitação de Agendamento | Cliente → P2 |
-| 5 | Dados do Serviço | Serviço → P3 |
-| 6 | Dados do Serviço | P3 → SERVIÇOS |
-| 7 | Dados do Profissional | P4 → PROFISSIONAIS |
-| 8 | Solicitações de Relatório | Administrador → P5 |
-| 9 | Comandos de Gerenciamento | Administrador → P1, P3, P4 |
-| 10 | Dados dos Relatórios | P5 → Administrador |
-
----
-
-## Diagrama de Fluxo de Dados - Detalhado (Nível 2)
-
-### P2: Gerenciamento de Agendamentos
+### 2.2 Gerenciamento de Dados (CRUD)
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│              P2: GERENCIAMENTO DE AGENDAMENTOS                      │
-│                                                                      │
-│   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐          │
-│   │  Listar     │     │  Criar      │     │  Editar     │          │
-│   │Agendamentos │     │Agendamento  │     │Agendamento  │          │
-│   └──────┬──────┘     └──────┬──────┘     └──────┬──────┘          │
-│          │                  │                  │                   │
-│          └──────────────────┼──────────────────┘                   │
-│                             │                                       │
-│                             ▼                                       │
-│                    ┌────────────────┐                               │
-│                    │    VALIDAR     │                               │
-│                    │  AGENDAMENTO   │                               │
-│                    └────────┬───────┘                               │
-│                             │                                       │
-│                             ▼                                       │
-│                    ┌────────────────┐                               │
-│                    │  ATUALIZAR     │──────► Status:               │
-│                    │    STATUS      │       AGENDADO/CONCLUIDO/    │
-│                    └────────────────┘       CANCELADO               │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     PROCESSO: GERENCIAMENTO DE DADOS                         │
+│                                                                             │
+│   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                 │
+│   │    Cliente   │    │   Serviço    │    │  Profissional│                 │
+│   │   (CRUD)     │    │   (CRUD)     │    │   (CRUD)     │                 │
+│   └──────┬───────┘    └──────┬───────┘    └──────┬───────┘                 │
+│          │                    │                    │                        │
+│          ▼                    ▼                    ▼                        │
+│   ┌─────────────────────────────────────────────────────────┐              │
+│   │                   DATA STORE: CLIENTES                   │              │
+│   │   - id (PK)                                              │              │
+│   │   - nome                                                 │              │
+│   │   - email                                                │              │
+│   │   - telefone                                             │              │
+│   │   - deleted_at (soft delete)                            │              │
+│   └─────────────────────────────────────────────────────────┘              │
+│                                                                             │
+│   ┌─────────────────────────────────────────────────────────┐              │
+│   │                   DATA STORE: SERVIÇOS                   │              │
+│   │   - id (PK)                                              │              │
+│   │   - nome                                                 │              │
+│   │   - preco                                                │              │
+│   │   - deleted_at (soft delete)                            │              │
+│   └─────────────────────────────────────────────────────────┘              │
+│                                                                             │
+│   ┌─────────────────────────────────────────────────────────┐              │
+│   │                DATA STORE: PROFISSIONAIS                 │              │
+│   │   - id (PK)                                              │              │
+│   │   - nome                                                 │              │
+│   │   - especialidade                                        │              │
+│   │   - deleted_at (soft delete)                            │              │
+│   └─────────────────────────────────────────────────────────┘              │
+│                                                                             │
+│   ┌─────────────────────────────────────────────────────────┐              │
+│   │                DATA STORE: USUÁRIOS (Django Auth)       │              │
+│   │   - id (PK)                                              │              │
+│   │   - username                                             │              │
+│   │   - password (hashed)                                   │              │
+│   │   - is_staff                                             │              │
+│   └─────────────────────────────────────────────────────────┘              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.3 Agendamento de Serviços
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 PROCESSO: AGENDAMENTO DE SERVIÇOS                          │
+│                                                                             │
+│   ┌────────────────────────────────────────────────────────────────────┐    │
+│   │                      FLUXO DE AGENDAMENTO                          │    │
+│   │                                                                     │    │
+│   │   ┌─────────┐    ┌─────────────┐    ┌──────────────┐             │    │
+│   │   │ Cliente │───▶│ Selecionar  │───▶│ Escolher     │             │    │
+│   │   │         │    │ Serviço     │    │ Profissional │             │    │
+│   │   └─────────┘    └─────────────┘    └──────┬───────┘             │    │
+│   │                                              │                      │    │
+│   │                                              ▼                      │    │
+│   │                                    ┌──────────────┐                │    │
+│   │                                    │ Definir Data │                │    │
+│   │                                    │    e Hora    │                │    │
+│   │                                    └──────┬───────┘                │    │
+│   │                                           │                        │    │
+│   │                                           ▼                        │    │
+│   │                                    ┌──────────────┐                │    │
+│   │                                    │ Validar      │                │    │
+│   │                                    │ Disponibil.  │                │    │
+│   │                                    └──────┬───────┘                │    │
+│   │                                           │                        │    │
+│   │                                           ▼                        │    │
+│   │                                    ┌──────────────┐                │    │
+│   │                                    │   SALVAR     │                │    │
+│   │                                    │ Agendamento  │                │    │
+│   │                                    └──────────────┘                │    │
+│   └────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│   ┌─────────────────────────────────────────────────────────────────────┐    │
+│   │                    DATA STORE: AGENDAMENTOS                         │    │
+│   │   - id (PK)                                                         │    │
+│   │   - cliente_id (FK) ─────────▶ Clientes                            │    │
+│   │   - servico_id (FK) ──────────▶ Serviços                           │    │
+│   │   - profissional_id (FK) ─────▶ Profissionais                     │    │
+│   │   - data_hora (DateTime)                                            │    │
+│   │   - status (AGENDADO/CONCLUIDO/CANCELADO)                          │    │
+│   │   - deleted_at (soft delete)                                       │    │
+│   │                                                                     │    │
+│   │   Índice: (status, data_hora)                                      │    │
+│   └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│   STATUS DO AGENDAMENTO:                                                   │
+│   ┌────────────┐    ┌────────────┐    ┌────────────┐                      │
+│   │  AGENDADO  │───▶│ CONCLUIDO  │    │ CANCELADO  │                      │
+│   └────────────┘    └────────────┘    └────────────┘                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.4 Relatórios e Estatísticas
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       PROCESSO: RELATÓRIOS                                   │
+│                                                                             │
+│   ┌──────────────────────────────────────────────────────────────────────┐ │
+│   │                         TIPOS DE RELATÓRIO                            │ │
+│   │                                                                       │ │
+│   │  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐         │ │
+│   │  │ Agendamentos   │  │  Faturamento   │  │  Serviços mais│         │ │
+│   │  │ por Dia/Mês    │  │  (receita)     │  │  solicitados  │         │ │
+│   │  └────────────────┘  └────────────────┘  └────────────────┘         │ │
+│   │                                                                       │ │
+│   │  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐         │ │
+│   │  │ Performance de │  │  Status dos   │  │ Top 10        │         │ │
+│   │  │ Profissionais   │  │  Agendamentos │  │ Clientes      │         │ │
+│   │  └────────────────┘  └────────────────┘  └────────────────┘         │ │
+│   └──────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│   PARÂMETROS DE FILTRO:                                                    │
+│   - data_inicio (YYYY-MM-DD)                                               │
+│   - data_fim (YYYY-MM-DD)                                                  │
+│   - periodo (dia/mes) - para relatórios temporais                          │
+│                                                                             │
+│   FLUXO DE DADOS:                                                           │
+│                                                                             │
+│   Request GET ──▶ Processar Filtros ──▶ Query Database ──▶ JSON Response  │
+│                                                                             │
+│   Endpoints:                                                                │
+│   - /relatorios/dados/          → dados_relatorio                         │
+│   - /relatorios/faturamento/    → dados_relatorio_faturamento              │
+│   - /relatorios/servicos/       → dados_relatorio_servicos                  │
+│   - /relatorios/profissionais/  → dados_relatorio_profissionais            │
+│   - /relatorios/status/         → dados_relatorio_status                   │
+│   - /relatorios/clientes/       → dados_relatorio_clientes                  │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Regras de Negócio (como Fluxo de Dados)
-
-| Regra | Descrição | Fluxo Associado |
-|-------|-----------|-----------------|
-| RN1 | Um agendamento deve ter um cliente válido | P1 → P2 |
-| RN2 | Um agendamento deve ter um serviço existente | P3 → P2 |
-| RN3 | Um agendamento deve ter um profissional disponível | P4 → P2 |
-| RN4 | O status pode ser alterado apenas por usuários autenticados | P6 → P2 |
-| RN5 | Relatórios só podem ser gerados por administradores | P6 → P5 |
-
----
-
-## Casos de Uso - Fluxo de Dados
-
-### Caso de Uso 1: Criar Agendamento
+## Entidades Externas (Atores)
 
 ```
-Cliente ──(1) Dados do Cliente────────────────► P1 ──(2) Confirmação ──► Cliente
-                                                      │
-                                                      ▼
-                                              CLIENTES (armazena)
-                                                      │
-                                                      ▼
-                               ┌───────────────────────────────┐
-                               │   P2: Gerenciamento de        │
-                               │   Agendamentos                │
-                               │                               │
-                               │  (3) Dados de Agendamento      │
-                               │  ┌─────────────────────┐      │
-                               │  │• cliente_id         │      │
-                               │  │• servico_id         │      │
-                               │  │• profissional_id    │      │
-                               │  │• data_hora          │      │
-                               │  │• status: AGENDADO   │      │
-                               │  └─────────────────────┘      │
-                               │              │                 │
-                               │              ▼                 │
-                               │  ┌─────────────────────┐      │
-                               │  │ Validar Agendamento │      │
-                               │  └─────────────────────┘      │
-                               │              │                 │
-                               │              ▼                 │
-                               │  ┌─────────────────────┐      │
-                               │  │ Armazenar            │      │
-                               │  │ Agendamento          │      │
-                               │  └─────────────────────┘      │
-                               └───────────────────────────────┘
-                                              │
-                                              ▼
-                                      AGENDAMENTOS
-```
-
-### Caso de Uso 2: Gerar Relatório de Faturamento
-
-```
-Administrador ──(1) Solicitar Relatório───► P5 ──(2) Buscar Dados ──► AGENDAMENTOS
-      │                                          │                              │
-      │                                          │                              │
-      │                                          ▼                              │
-      │                                 ┌────────────────┐                     │
-      │                                 │  Filtrar por   │                     │
-      │                                 │  Status =      │                     │
-      │                                 │  CONCLUIDO     │                     │
-      │                                 └────────────────┘                     │
-      │                                          │                              │
-      │                                          ▼                              │
-      │                                 ┌────────────────┐                     │
-      │                                 │  Calcular      │                     │
-      │                                 │  Faturamento   │                     │
-      │                                 └────────────────┘                     │
-      │                                          │                              │
-      │                                          ▼                              │
-      │                                 ┌────────────────┐                     │
-      │                                 │  Agrupar por   │                     │
-      │                                 │  dia/mês       │                     │
-      │                                 └────────────────┘                     │
-      │                                          │                              │
-      │(3) Relatório ◄──────────────────────────┘                              │
-      │                                                                         
-      ▼                                                                         
-(Gráficos/Tabela)
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│    CLIENTE      │     │  PROFISSIONAL   │     │  ADMINISTRADOR │
+│                 │     │                 │     │                 │
+│ - Agenda        │     │ - Executa       │     │ - Gerencia     │
+│   serviços      │     │   serviços      │     │   usuários     │
+│ - Visualiza     │     │ - Atualiza      │     │ - CRUD completo│
+│   histórico     │     │   agenda        │     │ - Visualiza    │
+│                 │     │                 │     │   relatórios   │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
 ---
 
-## Resumo dos Fluxos
+## Fluxo de Dados Principal
 
-| # | Fluxo | Tipo |
-|---|-------|------|
-| 1 | Cliente → P1 (Dados do Cliente) | Dados |
-| 2 | P1 → CLIENTES (Confirmação) | Dados |
-| 3 | P1 → P2 (Dados do Cliente para Agendamento) | Dados |
-| 4 | Cliente → P2 (Solicitação de Agendamento) | Dados |
-| 5 | Serviço → P3 (Dados do Serviço) | Dados |
-| 6 | P3 → SERVIÇOS (Confirmação) | Dados |
-| 7 | P4 → PROFISSIONAIS (Confirmação) | Dados |
-| 8 | Administrador → P5 (Solicitação de Relatório) | Dados |
-| 9 | Administrador → Processos (Comandos de Gestão) | Controle |
-| 10 | P5 → Administrador (Dados do Relatório) | Dados |
-| 11 | Cliente → P6 (Credenciais) | Dados |
-| 12 | P6 → USUÁRIOS (Validação) | Dados |
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     FLUXO PRINCIPAL DE DADOS                                │
+│                                                                             │
+│  ┌─────────┐    ┌─────────┐    ┌─────────────┐    ┌───────────────────┐   │
+│  │ Cliente │───▶│ Form    │───▶│  Validation │───▶│   Banco de Dados  │   │
+│  │Request │    │ (POST)  │    │  (Django)   │    │   (MySQL)         │   │
+│  └─────────┘    └─────────┘    └─────────────┘    └───────────────────┘   │
+│       │                                                      │              │
+│       │         ┌──────────────────────────────────────────┘              │
+│       │         │                                                           │
+│       ▼         ▼                                                           │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                    RESPONSE (HTML/JSON)                             │    │
+│  │  - Render templates (HTML)                                          │    │
+│  │  - JsonResponse (para relatórios)                                   │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Conclusão
+## Tabelas do Banco de Dados
 
-Este documento apresenta a arquitetura de fluxo de dados do Sistema de Agendamentos de Salão. O DFD demonstra como as informações fluem entre os diferentes componentes do sistema, desde a entrada de dados até a geração de relatórios, garantindo uma compreensão clara da arquitetura do sistema.
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         ESTRUTURA DO BANCO DE DADOS                         │
+│                                                                             │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐        │
+│  │     Cliente      │  │     Servico       │  │    Profissional  │        │
+│  ├──────────────────┤  ├──────────────────┤  ├──────────────────┤        │
+│  │ id (PK)          │  │ id (PK)          │  │ id (PK)          │        │
+│  │ nome             │  │ nome             │  │ nome             │        │
+│  │ email            │  │ preco            │  │ especialidade    │        │
+│  │ telefone         │  │ deleted_at       │  │ deleted_at       │        │
+│  │ deleted_at       │  └──────────────────┘  └──────────────────┘        │
+│  └──────────────────┘                                                      │
+│                                                                             │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐        │
+│  │    Agendamento   │  │       User       │  │     Agendamento  │        │
+│  │   (principal)    │  │   (Django Auth)  │  │      Index       │        │
+│  ├──────────────────┤  ├──────────────────┤  ├──────────────────┤        │
+│  │ id (PK)          │  │ id (PK)          │  │ status           │        │
+│  │ cliente_id (FK)  │  │ username         │  │ data_hora        │        │
+│  │ servico_id (FK)  │  │ password         │  │ (índice composto)│        │
+│  │ profissional_id  │  │ is_staff         │  └──────────────────┘        │
+│  │ data_hora        │  └──────────────────┘                               │
+│  │ status           │                                                    │
+│  │ deleted_at       │                                                    │
+│  └──────────────────┘                                                    │
+│                                                                             │
+│  RELACIONAMENTOS:                                                          │
+│  Agendamento 1:N Cliente                                                   │
+│  Agendamento 1:N Servico                                                   │
+│  Agendamento 1:N Profissional                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-*Documento gerado para o Sistema de Gerenciamento de Agendamentos de Salão*
-*Versão: 1.0*
+## Tecnologias Utilizadas
 
+| Componente       | Tecnologia          |
+|------------------|--------------------|
+| Backend          | Django 6.0         |
+| Banco de Dados   | MySQL              |
+| Autenticação     | Django Auth        |
+| Frontend         | HTML/CSS/JS        |
+| Soft Delete      | django-softdelete  |
+| Deploy           | Docker             |
+
+---
+
+## Referência de Endpoints
+
+| Rota                        | Função                    | Método |
+|-----------------------------|---------------------------|--------|
+| /                           | Lista agendamentos        | GET    |
+| /novo/                      | Criar agendamento         | GET/POST |
+| /editar/<id>/               | Editar agendamento        | GET/POST |
+| /clientes/                  | Lista clientes            | GET    |
+| /clientes/novo/             | Criar cliente             | GET/POST |
+| /servicos/                  | Lista serviços            | GET    |
+| /servicos/novo/            | Criar serviço             | GET/POST |
+| /profissionais/             | Lista profissionais       | GET    |
+| /profissionais/novo/       | Criar profissional        | GET/POST |
+| /relatorios/                | Painel de relatórios      | GET    |
+| /relatorios/dados/          | Dados básica              | GET    |
+| /relatorios/faturamento/   | Faturamento               | GET    |
+| /usuarios/                  | Gerenciar usuários        | GET    |
+| /register/                  | Registro de usuário       | GET/POST |
+| /login/                     | Login                     | GET/POST |
+
+---
+
+*Documento gerado automaticamente para o Sistema de Gerenciamento de Salão*
+*Versão 1.0*

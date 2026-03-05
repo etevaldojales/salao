@@ -25,21 +25,21 @@ Este é um sistema de gerenciamento de agendamentos para salões de beleza, dese
 - Listar clientes cadastrados
 - Criar novos clientes (nome, email, telefone)
 - Editar informações do cliente
-- Excluir clientes
+- Excluir clientes (os dados não são removidos permanentemente, permitindo recuperação)
 
 ### 3. Gerenciamento de Serviços
 
 - Listar serviços disponíveis
-- Criar novos serviços (nome, preço, duração)
+- Criar novos serviços (nome, preço)
 - Editar informações do serviço
-- Excluir serviços
+- Excluir serviços (os dados não são removidos permanentemente, permitindo recuperação)
 
 ### 4. Gerenciamento de Profissionais
 
 - Listar profissionais cadastrados
 - Criar novos profissionais (nome, especialidade)
 - Editar informações do profissional
-- Excluir profissionais
+- Excluir profissionais (os dados não são removidos permanentemente, permitindo recuperação)
 
 ### 5. Agendamentos
 
@@ -174,7 +174,6 @@ salao/
 | id | Integer | PK automático |
 | nome | Char(100) | Nome do serviço |
 | preco | Decimal(8,2) | Preço do serviço |
-| duracao | Duration | Duração do serviço |
 
 ### Profissional
 | Campo | Tipo | Descrição |
